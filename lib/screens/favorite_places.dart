@@ -1,57 +1,52 @@
+import 'package:favorite_places_app/providers/user_places.dart';
 import 'package:favorite_places_app/screens/new_place.dart';
-import 'package:favorite_places_app/screens/place_detail.dart';
+import 'package:favorite_places_app/widgets/places_list.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/place.dart';
-
-class FavoritePlacesScreen extends StatefulWidget {
+class FavoritePlacesScreen extends ConsumerWidget {
   const FavoritePlacesScreen({super.key});
 
-  @override
-  State<FavoritePlacesScreen> createState() => _FavoritePlacesScreenState();
-}
-
-class _FavoritePlacesScreenState extends State<FavoritePlacesScreen> {
-  final List<Place> _favoritePlaces = [];
-
-  void _addPlace() async {
-    final newPlace = await Navigator.of(context)
-        .push<Place>(MaterialPageRoute(builder: (ctx) => const NewPlace()));
-    setState(() {
-      _favoritePlaces.add(newPlace!);
-    });
-  }
+  //final List<Place> _favoritePlaces = [];
 
   @override
-  Widget build(BuildContext context) {
-    Widget content = ListView.builder(
-        itemCount: _favoritePlaces.length,
-        itemBuilder: (context, index) {
-          return InkWell(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (ctx) =>
-                      PlaceDetailScreen(place: _favoritePlaces[index])));
-            },
-            child: Text(_favoritePlaces[index].title),
-          );
-        });
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userPlaces = ref.watch(userPlacesProvider);
+    // Widget content = ListView.builder(
+    //     itemCount: _favoritePlaces.length,
+    //     itemBuilder: (context, index) {
+    //       return InkWell(
+    //         onTap: () {
+    //           Navigator.of(context).push(MaterialPageRoute(
+    //               builder: (ctx) =>
+    //                   PlaceDetailScreen(place: _favoritePlaces[index])));
+    //         },
+    //         child: Text(_favoritePlaces[index].title,
+    //             style: Theme.of(context).textTheme.titleMedium!.copyWith(
+    //                 color: Theme.of(context).colorScheme.onBackground)),
+    //       );
+    //     });
 
-    if (_favoritePlaces.isEmpty) {
-      content = Center(
-        child: Text('No place added yet.',
-            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                color: Theme.of(context).colorScheme.onSecondaryContainer)),
-      );
-    }
+    // if (_favoritePlaces.isEmpty) {
+    //   content = Center(
+    //     child: Text('No place added yet.',
+    //         style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+    //             color: Theme.of(context).colorScheme.onSecondaryContainer)),
+    //   );
+    // }
 
     return Scaffold(
         appBar: AppBar(
           title: const Text('Your Places'),
           actions: [
-            IconButton(onPressed: _addPlace, icon: const Icon(Icons.add))
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (ctx) => NewPlaceScreen()));
+                },
+                icon: const Icon(Icons.add))
           ],
         ),
-        body: content);
+        body: PlacesList(places: userPlaces));
   }
 }
