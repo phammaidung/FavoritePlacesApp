@@ -41,8 +41,8 @@ class FavoritePlacesScreen extends ConsumerWidget {
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (ctx) => NewPlaceScreen()));
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (ctx) => const NewPlaceScreen()));
                 },
                 icon: const Icon(Icons.add))
           ],
