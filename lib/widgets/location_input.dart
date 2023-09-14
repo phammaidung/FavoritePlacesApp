@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:favorite_places_app/models/place.dart';
+import 'package:favorite_places_app/screens/map.dart';
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
@@ -27,6 +29,22 @@ class _LocationInputState extends State<LocationInput> {
     final lat = _pickedLocation!.latitude;
     final long = _pickedLocation!.longtitude;
     return 'https://maps.locationiq.com/v3/staticmap?key=pk.dabbb7c5ff00c75b70bed3798994c6a9&center=$lat,$long&size=600x300&zoom=16&markers=$lat,$long|icon:large-red-cutout&format=png';
+  }
+
+  void _savePlace(double lat, double long) async {
+    final url = Uri.parse(
+        'https://us1.locationiq.com/v1/reverse?key=pk.dabbb7c5ff00c75b70bed3798994c6a9&lat=$lat&lon=$long&format=json');
+
+    final response = await http.get(url);
+    final resData = json.decode(response.body);
+    final address = resData['display_name'];
+    setState(() {
+      _pickedLocation =
+          PlaceLocation(latitude: lat, longtitude: long, address: address);
+      _isGettingLocation = false;
+    });
+
+    widget.onSelectLocation(_pickedLocation!);
   }
 
   void _getCurrentLocation() async {
@@ -64,22 +82,18 @@ class _LocationInputState extends State<LocationInput> {
       return;
     }
 
-    final url = Uri.parse(
-        'https://us1.locationiq.com/v1/reverse?key=pk.dabbb7c5ff00c75b70bed3798994c6a9&lat=$lat&lon=$long&format=json');
+    _savePlace(lat, long);
+  }
 
-    final response = await http.get(url);
-    final resData = json.decode(response.body);
-    final address = resData['display_name'];
-    setState(() {
-      _pickedLocation =
-          PlaceLocation(latitude: lat, longtitude: long, address: address);
-      _isGettingLocation = false;
-    });
+  void _selectOnMap() async {
+    final pickedLocation = await Navigator.of(context)
+        .push<LatLng>(MaterialPageRoute(builder: (ctx) => MapScreen()));
 
-    widget.onSelectLocation(_pickedLocation!);
+    if (pickedLocation == null) {
+      return;
+    }
 
-    print('lat: ' + locationData.latitude.toString());
-    print('long: ' + locationData.longitude.toString());
+    _savePlace(pickedLocation.latitude, pickedLocation.longitude);
   }
 
   @override
@@ -126,7 +140,7 @@ class _LocationInputState extends State<LocationInput> {
                 icon: const Icon(Icons.location_on),
                 label: const Text('Get current location')),
             TextButton.icon(
-                onPressed: () {},
+                onPressed: _selectOnMap,
                 icon: const Icon(Icons.map),
                 label: const Text('Choose on Map')),
           ],

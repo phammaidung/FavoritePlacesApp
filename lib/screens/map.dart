@@ -32,7 +32,9 @@ class _MapScreenState extends State<MapScreen> {
           if (widget.isSelecting)
             IconButton(
               icon: const Icon(Icons.save),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pop(_pickedLocation);
+              },
             )
         ],
       ),
@@ -41,11 +43,13 @@ class _MapScreenState extends State<MapScreen> {
           /// using FlutterMap instead of GooggleMap package.
           FlutterMap(
         options: MapOptions(
-          onTap: (tapPosition, point) {
-            setState(() {
-              _pickedLocation = point;
-            });
-          },
+          onTap: !widget.isSelecting
+              ? null
+              : (tapPosition, point) {
+                  setState(() {
+                    _pickedLocation = point;
+                  });
+                },
           center: LatLng(widget.location.latitude, widget.location.longtitude),
           zoom: 16,
         ),
