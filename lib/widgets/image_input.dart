@@ -17,10 +17,11 @@ class ImageInput extends StatefulWidget {
 class _ImageInputState extends State<ImageInput> {
   File? _selectedImage;
 
-  void _takePicture() async {
+  void _takePicture(bool isCamera) async {
     final imagePicker = ImagePicker();
-    final pickedImage =
-        await imagePicker.pickImage(source: ImageSource.camera, maxWidth: 600);
+    final pickedImage = await imagePicker.pickImage(
+        source: isCamera == true ? ImageSource.camera : ImageSource.gallery,
+        maxWidth: 600);
 
     if (pickedImage == null) {
       return;
@@ -35,10 +36,31 @@ class _ImageInputState extends State<ImageInput> {
 
   @override
   Widget build(BuildContext context) {
-    Widget content = TextButton.icon(
-      icon: const Icon(Icons.camera),
-      label: const Text('Take Picture'),
-      onPressed: _takePicture,
+    Widget content = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        TextButton.icon(
+          icon: const Icon(Icons.photo_camera),
+          label: const Text('Take Photo'),
+          style: TextButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.surface),
+          onPressed: () {
+            _takePicture(true);
+          },
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        TextButton.icon(
+          icon: const Icon(Icons.image),
+          label: const Text('Import Image'),
+          style: TextButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.surface),
+          onPressed: () {
+            _takePicture(false);
+          },
+        ),
+      ],
     );
 
     if (_selectedImage != null) {

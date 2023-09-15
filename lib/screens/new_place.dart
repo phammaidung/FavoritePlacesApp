@@ -70,9 +70,12 @@ class _NewPlaceState extends ConsumerState<NewPlaceScreen> {
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
-                onPressed: _savePlace,
-                icon: const Icon(Icons.add),
-                label: const Text('Add place'))
+              onPressed: _savePlace,
+              icon: const Icon(Icons.add),
+              label: const Text('Add place'),
+              style: ElevatedButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.titleMedium!),
+            )
           ],
         ),
       ),
