@@ -87,7 +87,7 @@ class _LocationInputState extends State<LocationInput> {
 
   void _selectOnMap() async {
     final pickedLocation = await Navigator.of(context)
-        .push<LatLng>(MaterialPageRoute(builder: (ctx) => MapScreen()));
+        .push<LatLng>(MaterialPageRoute(builder: (ctx) => const MapScreen()));
 
     if (pickedLocation == null) {
       return;

@@ -4,13 +4,27 @@ import 'package:favorite_places_app/widgets/places_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FavoritePlacesScreen extends ConsumerWidget {
+class FavoritePlacesScreen extends ConsumerStatefulWidget {
   const FavoritePlacesScreen({super.key});
 
-  //final List<Place> _favoritePlaces = [];
+  @override
+  ConsumerState<FavoritePlacesScreen> createState() {
+    return _FavoritePlacesScreenState();
+  }
+}
+//final List<Place> _favoritePlaces = [];
+
+class _FavoritePlacesScreenState extends ConsumerState<FavoritePlacesScreen> {
+  late Future<void> _placesFuture;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    _placesFuture = ref.read(userPlacesProvider.notifier).loadPlaces();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final userPlaces = ref.watch(userPlacesProvider);
     // Widget content = ListView.builder(
     //     itemCount: _favoritePlaces.length,
@@ -48,8 +62,15 @@ class FavoritePlacesScreen extends ConsumerWidget {
           ],
         ),
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: PlacesList(places: userPlaces),
-        ));
+            padding: const EdgeInsets.all(8.0),
+            child: FutureBuilder(
+              future: _placesFuture,
+              builder: (context, snapshot) =>
+                  snapshot.connectionState == ConnectionState.waiting
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : PlacesList(places: userPlaces),
+            )));
   }
 }
