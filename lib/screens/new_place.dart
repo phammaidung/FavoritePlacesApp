@@ -18,8 +18,6 @@ class NewPlaceScreen extends ConsumerStatefulWidget {
 }
 
 class _NewPlaceState extends ConsumerState<NewPlaceScreen> {
-  // final _formKey = GlobalKey<FormState>();
-  // var _enteredTitle = '';
   final _titleController = TextEditingController();
   File? _selectedImage;
   PlaceLocation? _selectedLocation;
@@ -37,6 +35,12 @@ class _NewPlaceState extends ConsumerState<NewPlaceScreen> {
         .addPlace(enteredTitle, _selectedImage!, _selectedLocation!);
 
     Navigator.of(context).pop();
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    super.dispose();
   }
 
   @override
